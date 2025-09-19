@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta charset='utf-8'>
+        <title>Documentation &mdash; NCPA</title>
+        <link rel="shortcut icon" type="image/png" href="../img/ncpa.png" />
+        <link rel="icon" type="image/png" href="../img/ncpa.png" />
+        <link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" />
+        <link rel="stylesheet" href="../css/font-awesome.min.css" type="text/css" />
+        <link rel="stylesheet" href="../css/ncpa.css" type="text/css" />
+        <script src='../js/jquery.3.6.4.min.js'></script>
+        <script src='../js/bootstrap.min.js'></script>
+        <script src='../js/help.js'></script>
+    </head>
+    <body class="help">
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 col-lg-10">
+
+                <h1>Overview</h1>
+
+                <p>This help documentation explains the inner workings of NCPA as well as providing a reference for configuring and setting up NCPA instances. If you've never used NCPA before, and have not yet installed it on a machine - you can take a look at the <a target="_new" href="https://nagios.org/ncpa/getting-started.php">getting started guide</a> <i class="fa fa-external-link"></i> available on the NCPA website, which will go through the initial installation admin setup, and show you how start monitoring with passive or active checks using either Nagios XI or Nagios Core.</p>
+                <p>This help documentation is geared towards those who have already installed NCPA and are looking at more advanced configuration and setup using this help as a reference. More guides and documentation can be found on the <a target="_new" href="https://nagios.org/ncpa/">NCPA website</a> <i class="fa fa-external-link"></i>.</p>
+
+                <a name="ncpa-single-service"></a>
+                <div class="section">
+
+                    <h2>NCPA 3.x Single Service</h2>
+                    <p>In previous versions, NCPA ran as two separate services:
+                        <ul>
+                            <li>NCPA Listener</li>
+                            <li>NCPA Passive</li>
+                        </ul>
+
+                        The <b>NCPA Listener</b> service would listen for active checks coming from a Nagios Core or Nagios XI system.<br />
+                        The <b>NCPA Passive</b> service would send service check results back to a Nagios Core or Nagios XI system.<br />
+                        <br />
+                        With the relase of NCPA 3.0, the passive functionality has been rolled into a single <b>NCPA</b> service. By default, the service will run as the <b>nagios</b> user and group. This can be changed by modifying the <b>uid</b> and <b>gid</b> (for user and group, respectively) settings in the <i>ncpa.cfg</i> file.
+                    </p>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-5">
+                                <h3>NCPA Service</h3>
+                                <p>
+                                    The <em>NCPA</em> service does the following:
+                                    <ul>
+                                        <li>Serves and handles connections to the web GUI</li>
+                                        <li>Handles external API requests (including those for active checks)</li>
+                                        <li>Provides API for live graphing and top processes</li>
+                                        <li>Provides an "offline" internal API for the <em>NCPA Passive</em> process</li>
+                                        <li>Runs passive checks defined in the [passive checks] configuration section</li>
+                                        <li>Connects and sends passive check results to the defined NRDP URL</li>
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <a name="restarting-ncpa"></a>
+                <div class="section">
+
+                    <h2>Restarting the NCPA Service</h2>
+                    <p>You will need to restart the NCPA service whenever a configuration change is made.</p>
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#windows" role="tab" data-toggle="tab"><i class="fa fa-windows fa-l fa-14"></i> Windows</a></li>
+                        <li role="presentation"><a href="#linux" role="tab" data-toggle="tab"><i class="fa fa-linux fa-l fa-14"></i> Linux</a></li>
+                        <li role="presentation"><a href="#mac" role="tab" data-toggle="tab"><i class="fa fa-apple fa-l fa-14"></i> Mac OS X</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="windows">
+                            <p>You can also view the services in the Windows services administration panel, but you can also do it easily from CMD.</p>
+<pre>net stop ncpa
+net start ncpa</pre>
+                            <p>You can also affect services through Powershell. The verbs will be <b>Start</b>, <b>Stop</b>, and <b>Restart</b>. <b>Start</b> will start a service that is not running. <b>Stop</b> will stop a service that is not running. <b>Restart</b> will stop and then start a service if it is running, or just start a service if it is not running. The Powershell cmdlets can be found below.</p>
+<pre>
+Start-Service ncpa
+Stop-Service ncpa
+Restart-Service ncpa
+</pre>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="linux">
+                            <p>This example should work for all supported Linux distros. If you are running v3+ on an older distro (it may run, even if not supported), you may need to use chkconfig or service commands vs. systemctl.</p>
+<pre>systemctl restart ncpa</pre>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="mac">
+<pre>sudo launchctl stop com.nagios.ncpa
+sudo launchctl start com.nagios.ncpa</pre>
+                        </div>
+                    </div>
+
+                </div>
+                <a name="changes-in-30"></a>
+                <div class="section">
+                    <h2>Change Log</h2>
+                    <p>You can view the full changelog on the <a target="_new" href="https://github.com/NagiosEnterprises/ncpa/blob/master/CHANGES.rst">NCPA GitHub repository</a> <i class="fa fa-external-link"></i>.</p>
+                </div>
+
+                <a name="troubleshooting"></a>
+                <div class="section">
+                    <h2>Troubleshooting</h2>
+                    <p>Sometimes when setting up NCPA things don't work out the first time. We've compiled a few troubleshooting tips and things that could happen that might give people headaches.</p>
+
+                    <p>
+                        <div class="alert alert-info">
+                            <i class="fa fa-file-text-o fa-14 fa-l"></i> <b>Note</b>: You may need to open port 5693 on your firewall to allow communications with NCPA.
+                        </div>
+                    </p>
+
+                    <h6>Checking for problems in the logs</h6>
+                    <p>Typically if there is an <em>error</em> you will always see that error logged, no matter what your log level since error is the most filtered log level available. However, sometimes Python errors will occur before logging starts in Windows systems. You can normally find these errors in the log files located in the same directory as the .exe files in the Windows Program Files directory that you installed NCPA into.</p>
+                    <p>That being said, a good habit to get into is setting your <code>loglevel</code> to <em>debug</em> when you are running into trouble where something is not working correctly. If you do this, and restart your NCPA services, we can get a better idea of what is going on and when it's going in the code. If you can't figure out the issue from reading the debug log, post it in an issue on <a href="https://github.com/NagiosEnterprises/ncpa" target="_new">GitHub</a> <i class="fa fa-external-link"></i> and the developers can take a look.</p>
+
+                    <h6>Make sure your checks do not use <em>api</em> node</h6>
+                    <p>For both passive and active checks, when you are configuring them, do not use the <em>api</em> section when specifying the endpoint to run. Examples below:</p>
+                    <pre>./check_ncpa.py -H &lt;ncpa server&gt; -t '&lt;your token&gt;' -M 'disk/logical/C:|' --units G</pre>
+                    <pre>%HOSTNAME%|&lt;service name&gt; = disk/logical/C:| --units G</pre>
+                    <p>Note that the <code>disk/logical/C:|</code> does not have the <code>api</code> portion applied. Remember that checks do not need a beginning forward slash. A good way to avoid using the wrong path is by viewing an example check for the endpoint you are making a check for from the API tab.</p>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    </body>
+</html>
